@@ -4,7 +4,7 @@ import { IBuyer, TBuyerErrors, TPayment } from '../../types';
  * Покупатель: хранит и проверяет данные для оформления заказа
  */
 export class BuyerModel {
-    protected payment: TPayment = '';
+    protected payment: TPayment | '' = '';
     protected address = '';
     protected email = '';
     protected phone = '';

@@ -5,8 +5,8 @@ export interface IApi {
     post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
 
-// Способ оплаты: онлайн, при получении или ещё не выбран
-export type TPayment = 'card' | 'cash' | '';
+// Способ оплаты: онлайн или при получении
+export type TPayment = 'card' | 'cash';
 
 // Товар
 export interface IProduct {
@@ -20,7 +20,7 @@ export interface IProduct {
 
 // Покупатель
 export interface IBuyer {
-    payment: TPayment;
+    payment: TPayment | '';
     email: string;
     phone: string;
     address: string;

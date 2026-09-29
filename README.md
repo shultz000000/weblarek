@@ -106,10 +106,10 @@ Presenter - презентер содержит основную логику п
 Способ оплаты заказа.
 
 ```
-type TPayment = 'card' | 'cash' | '';
+type TPayment = 'card' | 'cash';
 ```
 
-`'card'` — онлайн, `'cash'` — при получении, пустая строка — способ оплаты ещё не выбран.
+`'card'` — онлайн, `'cash'` — при получении.
 
 #### Интерфейс IProduct
 Товар каталога. Структура совпадает с данными, которые приходят с сервера.
@@ -137,14 +137,14 @@ interface IProduct {
 
 ```
 interface IBuyer {
-  payment: TPayment;
+  payment: TPayment | '';
   email: string;
   phone: string;
   address: string;
 }
 ```
 
-`payment` — выбранный способ оплаты.  
+`payment` — выбранный способ оплаты; пустая строка, если способ оплаты ещё не выбран.  
 `email` — электронная почта покупателя.  
 `phone` — телефон покупателя.  
 `address` — адрес доставки.
@@ -241,7 +241,7 @@ interface IOrderResult {
 `constructor()` — параметров не принимает, создаёт модель с пустыми полями.
 
 Поля класса:  
-`payment: TPayment` — способ оплаты; изначально пустая строка.  
+`payment: TPayment | ''` — способ оплаты; изначально пустая строка.  
 `address: string` — адрес доставки.  
 `email: string` — электронная почта.  
 `phone: string` — телефон.
