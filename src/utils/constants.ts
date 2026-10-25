@@ -17,6 +17,18 @@ export const categoryMap = {
 };
 
 export const settings = {
+  // Тексты интерфейса
+  currency: 'синапсов',
+  pricelessText: 'Бесценно',
+  emptyBasketText: 'Корзина пуста',
+  buyButtonText: 'Купить',
+  removeButtonText: 'Удалить из корзины',
+  unavailableButtonText: 'Недоступно',
+  successText: 'Списано',
+  errorsSeparator: '; ',
 
+  // Классы-модификаторы
+  modalActiveClass: 'modal_active',
+  paymentActiveClass: 'button_alt-active',
 };
 
