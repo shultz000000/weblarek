@@ -96,8 +96,5 @@ export interface ISuccess {
     total: number;
 }
 
-// Данные события изменения поля формы
-export type TFormChange = {
-    field: keyof IBuyer;
-    value: string;
-};
+// Данные события изменения формы: изменённые поля покупателя
+export type TFormChange = Partial<IBuyer>;

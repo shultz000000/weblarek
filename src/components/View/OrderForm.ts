@@ -20,11 +20,15 @@ export class OrderForm extends Form<TOrderForm> {
         this.addressInput = ensureElement<HTMLInputElement>('input[name="address"]', this.container);
 
         this.cardButton.addEventListener('click', () => {
-            this.events.emit<TFormChange>('form:change', { field: 'payment', value: 'card' });
+            this.events.emit<TFormChange>('form:change', { payment: 'card' });
         });
 
         this.cashButton.addEventListener('click', () => {
-            this.events.emit<TFormChange>('form:change', { field: 'payment', value: 'cash' });
+            this.events.emit<TFormChange>('form:change', { payment: 'cash' });
+        });
+
+        this.addressInput.addEventListener('input', () => {
+            this.events.emit<TFormChange>('form:change', { address: this.addressInput.value });
         });
     }
 

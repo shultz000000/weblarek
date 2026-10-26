@@ -25,11 +25,7 @@ export class Basket extends Component<IBasket> {
     }
 
     set items(value: HTMLElement[]) {
-        if (value.length) {
-            this.listElement.replaceChildren(...value);
-        } else {
-            this.listElement.textContent = settings.emptyBasketText;
-        }
+        this.listElement.replaceChildren(...value);
     }
 
     set total(value: number) {

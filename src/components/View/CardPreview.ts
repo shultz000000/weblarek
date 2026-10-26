@@ -1,7 +1,8 @@
 import { Card } from './Card';
-import { ICardActions, TCardPreview } from '../../types';
+import { IEvents } from '../base/Events';
+import { TCardPreview } from '../../types';
 import { ensureElement } from '../../utils/utils';
-import { CDN_URL } from '../../utils/constants';
+import { categoryMap, CDN_URL } from '../../utils/constants';
 
 /**
  * Карточка товара для подробного просмотра в модальном окне
@@ -12,7 +13,7 @@ export class CardPreview extends Card<TCardPreview> {
     protected descriptionElement: HTMLElement;
     protected buttonElement: HTMLButtonElement;
 
-    constructor(container: HTMLElement, actions?: ICardActions) {
+    constructor(protected events: IEvents, container: HTMLElement) {
         super(container);
 
         this.categoryElement = ensureElement<HTMLElement>('.card__category', this.container);
@@ -20,13 +21,16 @@ export class CardPreview extends Card<TCardPreview> {
         this.descriptionElement = ensureElement<HTMLElement>('.card__text', this.container);
         this.buttonElement = ensureElement<HTMLButtonElement>('.card__button', this.container);
 
-        if (actions?.onClick) {
-            this.buttonElement.addEventListener('click', actions.onClick);
-        }
+        this.buttonElement.addEventListener('click', () => {
+            this.events.emit('preview:button-click');
+        });
     }
 
     set category(value: string) {
-        this.setCategory(this.categoryElement, value);
+        this.categoryElement.textContent = value;
+        for (const [name, modifier] of Object.entries(categoryMap)) {
+            this.categoryElement.classList.toggle(modifier, name === value);
+        }
     }
 
     set image(value: string) {

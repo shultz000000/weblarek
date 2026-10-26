@@ -1,11 +1,12 @@
 import { Component } from '../base/Component';
 import { ensureElement } from '../../utils/utils';
-import { categoryMap, settings } from '../../utils/constants';
+import { settings } from '../../utils/constants';
+import { TCard } from '../../types';
 
 /**
  * Родительский класс карточек товара: название и цена
  */
-export abstract class Card<T> extends Component<T> {
+export abstract class Card<T extends TCard> extends Component<T> {
     protected titleElement: HTMLElement;
     protected priceElement: HTMLElement;
 
@@ -24,13 +25,5 @@ export abstract class Card<T> extends Component<T> {
         this.priceElement.textContent = value === null
             ? settings.pricelessText
             : `${value} ${settings.currency}`;
-    }
-
-    // Выводит категорию и устанавливает модификатор фона из categoryMap
-    protected setCategory(element: HTMLElement, value: string) {
-        element.textContent = value;
-        for (const [name, modifier] of Object.entries(categoryMap)) {
-            element.classList.toggle(modifier, name === value);
-        }
     }
 }

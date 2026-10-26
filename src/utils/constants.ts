@@ -20,7 +20,6 @@ export const settings = {
   // Тексты интерфейса
   currency: 'синапсов',
   pricelessText: 'Бесценно',
-  emptyBasketText: 'Корзина пуста',
   buyButtonText: 'Купить',
   removeButtonText: 'Удалить из корзины',
   unavailableButtonText: 'Недоступно',

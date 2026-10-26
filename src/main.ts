@@ -16,7 +16,7 @@ import { Basket } from './components/View/Basket';
 import { OrderForm } from './components/View/OrderForm';
 import { ContactsForm } from './components/View/ContactsForm';
 import { Success } from './components/View/Success';
-import { IBasket, IBuyer, IOrder, IProduct, TContactsForm, TFormChange, TOrderForm } from './types';
+import { IBasket, IOrder, IProduct, TContactsForm, TFormChange, TOrderForm } from './types';
 import { API_URL, settings } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
 
@@ -31,7 +31,8 @@ const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
 // ---------- Брокер событий, API и модели данных ----------
 const events = new EventEmitter();
-const webLarekApi = new WebLarekApi(new Api(API_URL));
+const api = new Api(API_URL);
+const webLarekApi = new WebLarekApi(api);
 
 const productsModel = new ProductsModel(events);
 const basketModel = new BasketModel(events);
@@ -41,6 +42,7 @@ const buyerModel = new BuyerModel(events);
 const header = new Header(events, ensureElement<HTMLElement>('.header'));
 const gallery = new Gallery(ensureElement<HTMLElement>('.gallery'));
 const modal = new Modal(events, ensureElement<HTMLElement>('#modal-container'));
+const cardPreview = new CardPreview(events, cloneTemplate(cardPreviewTemplate));
 const basketView = new Basket(events, cloneTemplate(basketTemplate));
 const orderForm = new OrderForm(events, cloneTemplate<HTMLFormElement>(orderTemplate));
 const contactsForm = new ContactsForm(events, cloneTemplate<HTMLFormElement>(contactsTemplate));
@@ -52,7 +54,7 @@ const success = new Success(events, cloneTemplate(successTemplate));
 function getBasketCards(): HTMLElement[] {
     return basketModel.getItems().map((item, index) => {
         const card = new CardBasket(cloneTemplate(cardBasketTemplate), {
-            onClick: () => events.emit('card:delete', item),
+            onClick: () => events.emit('basket-item:delete-click', item),
         });
         return card.render({ title: item.title, price: item.price, index: index + 1 });
     });
@@ -115,10 +117,6 @@ events.on('preview:changed', () => {
     const product = productsModel.getPreview();
     if (!product) return;
 
-    const card = new CardPreview(cloneTemplate(cardPreviewTemplate), {
-        onClick: () => events.emit('card:buy', product),
-    });
-
     let buttonText = settings.buyButtonText;
     if (product.price === null) {
         buttonText = settings.unavailableButtonText;
@@ -127,7 +125,7 @@ events.on('preview:changed', () => {
     }
 
     modal.render({
-        content: card.render({
+        content: cardPreview.render({
             title: product.title,
             price: product.price,
             image: product.image,
@@ -159,8 +157,11 @@ events.on('card:select', (product: IProduct) => {
     productsModel.setPreview(product);
 });
 
-// Нажата кнопка в подробной карточке: добавляем или удаляем товар
-events.on('card:buy', (product: IProduct) => {
+// Нажата кнопка в карточке подробного просмотра: добавляем или удаляем товар
+events.on('preview:button-click', () => {
+    const product = productsModel.getPreview();
+    if (!product) return;
+
     if (basketModel.has(product.id)) {
         basketModel.remove(product);
     } else {
@@ -170,30 +171,30 @@ events.on('card:buy', (product: IProduct) => {
 });
 
 // Нажата кнопка удаления товара в корзине
-events.on('card:delete', (product: IProduct) => {
+events.on('basket-item:delete-click', (product: IProduct) => {
     basketModel.remove(product);
 });
 
 // Нажата кнопка открытия корзины
 events.on('basket:open', () => {
-    modal.render({ content: basketView.render(getBasketData()) });
+    modal.render({ content: basketView.render() });
     modal.open();
 });
 
 // Нажата кнопка «Оформить» в корзине
 events.on('basket:order', () => {
-    modal.render({ content: orderForm.render(getOrderFormData()) });
+    modal.render({ content: orderForm.render() });
     modal.open();
 });
 
 // Изменены данные в форме
-events.on('form:change', ({ field, value }: TFormChange) => {
-    buyerModel.setData({ [field]: value } as Partial<IBuyer>);
+events.on('form:change', (data: TFormChange) => {
+    buyerModel.setData(data);
 });
 
 // Отправлена первая форма: переходим ко второй
 events.on('order:submit', () => {
-    modal.render({ content: contactsForm.render(getContactsFormData()) });
+    modal.render({ content: contactsForm.render() });
     modal.open();
 });
 
@@ -227,6 +228,11 @@ events.on('success:close', () => {
 events.on('modal:close', () => {
     modal.close();
 });
+
+// ---------- Начальное состояние ----------
+// События моделей выполнят начальный рендер счётчика, корзины и форм
+basketModel.clear();
+buyerModel.clear();
 
 // ---------- Загрузка каталога с сервера ----------
 webLarekApi

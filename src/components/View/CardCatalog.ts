@@ -1,7 +1,7 @@
 import { Card } from './Card';
 import { ICardActions, TCardCatalog } from '../../types';
 import { ensureElement } from '../../utils/utils';
-import { CDN_URL } from '../../utils/constants';
+import { categoryMap, CDN_URL } from '../../utils/constants';
 
 /**
  * Карточка товара в каталоге
@@ -22,7 +22,10 @@ export class CardCatalog extends Card<TCardCatalog> {
     }
 
     set category(value: string) {
-        this.setCategory(this.categoryElement, value);
+        this.categoryElement.textContent = value;
+        for (const [name, modifier] of Object.entries(categoryMap)) {
+            this.categoryElement.classList.toggle(modifier, name === value);
+        }
     }
 
     set image(value: string) {
